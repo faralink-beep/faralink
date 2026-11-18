@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FaraLink - Le Réseau Social Burkinabè</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#009739">
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; padding-bottom: 80px; transition: background 0.3s, color 0.3s; }
+body.mode-sombre { background: #121212; color: white; }
+body.mode-sombre .card { background: #1e1e1e; color: white; border: 1px solid #333; }
+body.mode-sombre input { background: #2a2a2a; color: white; border-color: #444; }
+body.mode-sombre .menu-bas { background: #1e1e1e; border-color: #333; }
+body.mode-sombre .un-comment { background: #2a2a2a; color: white; }
+body.mode-sombre .concours-detail { background: #2a2a2a; color: white; }
+body.mode-sombre .btn-photo-post { background: #2a2a2a; color: white; border-color: #444; }
+.header { background: white; color: #1c1e21; padding: 8px 12px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 5px rgba(0,0,0,0.1); max-width: 600px; margin-left: auto; margin-right: auto;}
+.header h1 { margin: 0; font-size: 24px; color: #009739; }
+.header p { margin: 0; font-size: 11px; opacity: 0.7; }
+.header p { margin: 0; font-size: 11px; opacity: 0.9; }
+.logo-header { width: 44px; height: 44px; border-radius: 50%; background: white; object-fit: cover; border: 2px solid white; flex-shrink: 0; }
+.logo-login { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #009739; background: white; }
+.menu-bas { background: white; display: flex; justify-content: space-around; padding: 8px 0 12px 0; border-top: 1px solid #ddd; position: fixed; top: 60px; left: 0; right: 0; z-index: 20; padding-bottom: max(12px, env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+.menu-bas button { border: none; background: none; font-weight: bold; color: #777; font-size: 8px; cursor: pointer; padding: 5px 1px; display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
+.menu-bas button span.icone { font-size: 19px; }
+.menu-bas button.actif { color: #009739; }
+.badge-notif { background: #EF2B2D; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; position: absolute; top: -2px; right: 5px; }
+.badge-cloche { background: #EF2B2D; color: white; font-size: 11px; padding: 2px 6px; border-radius: 10px; position: absolute; top: -5px; right: -5px; font-weight: bold; }
+.card { background: white; margin: 10px; padding: 15px; border-radius: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); max-width: 600px; margin-left: auto; margin-right: auto; position: relative; }
+.profil { display: flex; align-items: center; gap: 10px; }
+.avatar { width: 52px; height: 52px; background: #EF2B2D; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 21px; overflow: hidden; flex-shrink: 0; border: 2px solid #009739; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-grand { width: 120px; height: 120px; font-size: 44px; margin: 0 auto; border: 3px solid #009739; }
+input, select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin-top: 10px; font-size: 16px; background: #f9f9f9; }
+input:focus, select:focus { outline: none; border-color: #009739; background: white; }
+body.mode-sombre select { background: #2a2a2a; color: white; }
+.btn-publier { background: #009739; color: white; border: none; padding: 15px 20px; border-radius: 25px; margin-top: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 17px; }
+.btn-inscrire { background: #EF2B2D; color: white; border: none; padding: 15px 20px; border-radius: 12px; margin-top: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 17px; }
+.btn-connexion { background: #009739; color: white; border: none; padding: 15px 20px; border-radius: 12px; margin-top: 12px; font-weight: bold; width: 100%; cursor: pointer; font-size: 17px; }
+.btn-mentor { background: #009739; color: white; border: none; padding: 13px 15px; border-radius: 25px; margin-top: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
+.btn-photo { background: #FF8C00; color: white; border: none; padding: 12px 18px; border-radius: 25px; margin-top: 10px; font-weight: bold; cursor: pointer; font-size: 15px; }
+.btn-photo-post { background: #f0f2f5; color: #333; border: 1px solid #ddd; padding: 12px; border-radius: 25px; margin-top: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
+.btn-voir-mdp { background: none; border: none; color: #009739; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
+.btn-param { background: #f0f2f5; color: #333; border: none; padding: 14px; border-radius: 12px; margin-top: 8px; font-weight: bold; cursor: pointer; width: 100%; text-align: left; font-size: 15px; display: flex; justify-content: space-between; align-items: center; }
+body.mode-sombre .btn-param { background: #2a2a2a; color: white; }
+.btn-danger { background: #EF2B2D; color: white; border: none; padding: 14px; border-radius: 12px; margin-top: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
+.actions { display: flex; justify-content: space-around; margin-top: 12px; border-top: 1px solid #eee; padding-top: 10px; }
+.actions button { border: none; background: none; font-weight: bold; color: #555; cursor: pointer; font-size: 15px; padding: 8px 5px; flex: 1; }
+.actions button.liked { color: #EF2B2D; }
+.actions button.partage { color: #009739; }
+#ecran-connexion { padding: 15px; text-align: center; }
+#appli { display: none; }
+.zone-comment { margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display: none; }
+.un-comment { background: #f0f2f5; padding: 10px 12px; border-radius: 15px; margin-top: 8px; font-size: 15px; }
+.btn-comment { background: #009739; color: white; border: none; padding: 10px 18px; border-radius: 20px; margin-top: 5px; font-weight: bold; cursor: pointer; font-size: 15px; }
+.input-comment { padding: 11px; font-size: 15px; }
+.badge { background: #FFD700; color: #333; font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: bold; }
+.badge-ouvert { background: #009739; color: white; font-size: 11px; padding: 4px 10px; border-radius: 10px; font-weight: bold; }
+.badge-bientot { background: #FF8C00; color: white; font-size: 11px; padding: 4px 10px; border-radius: 10px; font-weight: bold; }
+.badge-secu { background: #009739; color: white; font-size: 11px; padding: 4px 10px; border-radius: 10px; font-weight: bold; }
+.page { display: none; }
+.page.active { display: block; animation: fade 0.2s; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+#inputPhoto, #inputPhotoPost, #inputStory { display: none; }
+.cover { height: 130px; background: linear-gradient(90deg, #009739, #EF2B2D, #FFD700); border-radius: 15px 15px 0 0; margin: -15px -15px 0 -15px; }
+.img-post { width: 100%; border-radius: 12px; margin-top: 10px; max-height: 450px; object-fit: cover; }
+#apercuPhotoPost { display: none; width: 100%; border-radius: 12px; margin-top: 10px; max-height: 250px; object-fit: cover; }
+.btn-petits { display: flex; gap: 8px; margin-top: 5px; }
+.btn-petits button { border: none; padding: 8px 12px; border-radius: 18px; font-weight: bold; cursor: pointer; font-size: 13px; flex: 1; }
+.btn-modifier { background: #FFD700; color: #333; }
+.btn-supprimer { background: #EF2B2D; color: white; }
+.texte-post { font-size: 17px; line-height: 1.5; word-break: break-word; }
+.concours-detail { background: #f9f9f9; padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 15px; line-height: 1.7; display: none; }
+.btn-detail { background: #009739; color: white; border: none; padding: 13px; border-radius: 25px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px; }
+.btn-interesse { background: #EF2B2D; color: white; border: none; padding: 10px 16px; border-radius: 25px; font-weight: bold; cursor: pointer; margin-top: 8px; font-size: 14px; }
+.alerte-secu { background: #FFF3CD; border: 1px solid #FFD700; padding: 10px; border-radius: 10px; font-size: 13px; margin-top: 10px; text-align: left; }
+.switch { position: relative; width: 50px; height: 28px; background: #ccc; border-radius: 20px; cursor: pointer; flex-shrink: 0; transition: 0.3s; }
+.switch.on { background: #009739; }
+.switch::after { content: ""; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: 0.3s; }
+.switch.on::after { left: 25px; }
+.ligne-param { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
+body.mode-sombre .ligne-param { border-color: #333; }
+.btn-ami { background: #009739; color: white; border: none; padding: 9px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; }
+.btn-ami-attente { background: #FFD700; color: #333; border: none; padding: 9px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; }
+.btn-ami-accepter { background: #009739; color: white; border: none; padding: 9px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; flex: 1; }
+.btn-ami-refuser { background: #eee; color: #333; border: none; padding: 9px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; flex: 1; }
+.btn-ami-supprimer { background: #EF2B2D; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 12px; }
+.carte-ami { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; cursor: pointer; }
+body.mode-sombre .carte-ami { border-color: #333; }
+.msg-moi { background: #009739; color: white; padding: 10px 14px; border-radius: 18px 18px 5px 18px; margin: 6px 0 6px 40px; text-align: right; font-size: 15px; word-break: break-word; }
+.msg-lui { background: #e9e9e9; color: #222; padding: 10px 14px; border-radius: 18px 18px 18px 5px; margin: 6px 40px 6px 0; font-size: 15px; word-break: break-word; }
+body.mode-sombre .msg-lui { background: #2a2a2a; color: white; }
+.zone-chat { max-height: 380px; overflow-y: auto; padding: 5px; }
+.barre-chat { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+.barre-chat input { margin-top: 0; flex: 1; }
+.btn-envoyer { background: #009739; color: white; border: none; padding: 14px 18px; border-radius: 50%; font-size: 18px; cursor: pointer; flex-shrink: 0; }
+.header-chat { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+body.mode-sombre .header-chat { border-color: #333; }
+.barre-stories { display: flex; gap: 12px; overflow-x: auto; padding: 10px; background: white; margin: 10px; border-radius: 15px; max-width: 600px; margin-left: auto; margin-right: auto; scrollbar-width: none; }
+body.mode-sombre .barre-stories { background: #1e1e1e; }
+.barre-stories::-webkit-scrollbar { display: none; }
+.une-story { min-width: 72px; text-align: center; cursor: pointer; flex-shrink: 0; }
+.cercle-story { width: 64px; height: 64px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #009739, #FFD700, #EF2B2D); margin: 0 auto; position: relative; }
+.cercle-story.vu { background: #ccc; }
+.cercle-story img, .cercle-story .avatar-story { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #EF2B2D; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 22px; border: 2px solid white; }
+.btn-plus-story { position: absolute; bottom: -2px; right: -2px; background: #009739; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; border: 2px solid white; font-weight: bold; }
+.nom-story { font-size: 11px; font-weight: bold; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 72px; }
+#visionneuseStory { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: black; z-index: 100; flex-direction: column; }
+.barre-progress-story { height: 4px; background: #444; margin: 10px; border-radius: 5px; overflow: hidden; }
+.barre-progress-story div { height: 100%; background: white; width: 0%; transition: width 0.1s; }
+.img-visionneuse { flex: 1; width: 100%; object-fit: contain; background: black; }
+.texte-story-centre { color: white; font-size: 28px; font-weight: bold; text-align: center; padding: 20px; flex: 1; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #009739, #EF2B2D); }
+.notif-card { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.notif-card.non-lue { background: #E8F5E9; border-left: 4px solid #009739; }
+body.mode-sombre .notif-card.non-lue { background: #1a2e1a; }
+.icone-notif { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.btn-filtre-notif { background: #f0f2f5; border: none; padding: 9px 14px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; }
+.btn-filtre-notif.actif { background: #009739; color: white; }
+body.mode-sombre .btn-filtre-notif { background: #2a2a2a; color: white; }
+@keyframes cloche { 0%,100% { transform: rotate(0); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
+.cloche-anime { animation: cloche 0.5s 3; }
+.chip-ville { background: #f0f2f5; border: none; padding: 8px 13px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 12px; }
+.chip-ville.actif { background: #009739; color: white; }
+body.mode-sombre .chip-ville { background: #2a2a2a; color: white; }
+/* PARTAGER */
+#modalPartager { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: flex-end; justify-content: center; }
+#modalPartager.ouvert { display: flex; }
+.boite-partager { background: white; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 15px; padding-bottom: 30px; animation: monte 0.25s; }
+body.mode-sombre .boite-partager { background: #1e1e1e; color: white; }
+@keyframes monte { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.btn-partage-opt { background: #f0f2f5; border: none; padding: 14px; border-radius: 12px; width: 100%; text-align: left; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 8px; display: flex; align-items: center; gap: 10px; }
+body.mode-sombre .btn-partage-opt { background: #2a2a2a; color: white; }
+.apercu-partage { background: #f0f2f5; padding: 12px; border-radius: 12px; font-size: 14px; line-height: 1.5; max-height: 110px; overflow: hidden; }
+body.mode-sombre .apercu-partage { background: #2a2a2a; }
+@media (min-width: 700px) { .menu-bas { max-width: 680px; left: 50%; transform: translateX(-50%); border-radius: 20px 20px 0 0; } body { padding-bottom: 80px; } }
+.menu-bas{
+display:flex;
+justify-content:space-around;
+align-items:center;
+background:white;
+padding:8px 0;
+border-top:1px solid #ddd;
+}
+.menu-bas button{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+background:none;
+border:none;
+font-size:12px;
+cursor:pointer;
+}
+#page-accueil .card{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+padding:12px;
+}
+#page-accueil .card .profil{
+width:100%;
+display:flex;
+gap:10px;
+align-items:center;
+}
+#monTexte{
+width:100%;
+background:#f0f2f5;
+border:none;
+border-radius:25px;
+padding:12px 15px;
+font-size:15px;
+}
+.btn-photo-post, .btn-publier, .btn-story-post{
+flex:1;
+border-radius:8px;
+padding:10px 5px;
+font-size:13px;
+cursor:pointer;
+}
+#carteKone .texte-post{
+width:100%;
+font-size:15px;
+line-height:1.5;
+margin:10px 0;
+}
+#carteKone .actions{
+width:100%;
+display:flex;
+gap:8px;
+border-top:1px solid #ddd;
+padding-top:10px;
+margin-top:5px;
+}
+#carteKone .actions button{
+flex:1;
+background:#f0f2f5;
+border:none;
+border-radius:8px;
+padding:9px 5px;
+font-size:14px;
+cursor:pointer;
+}
+#page-accueil .card .texte-post{
+width:100%;
+font-size:15px;
+line-height:1.5;
+margin:10px 0;
+}
+#page-accueil .card .actions{
+width:100%;
+display:flex;
+gap:8px;
+border-top:1px solid #ddd;
+padding-top:10px;
+margin-top:5px;
+}
+#page-accueil .card .actions button{
+flex:1;
+background:#f0f2f5;
+border:none;
+border-radius:8px;
+padding:9px 5px;
+font-size:14px;
+cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="ecran-connexion">
+<div class="card" style="max-width:400px; margin: 20px auto;">
+<img src="logo.png" class="logo-login" onerror="this.style.display='none'">
+<h1 style="color:#009739; font-size: 35px; margin:10px 0 0 0;">🇧🇫 FaraLink</h1>
+<p>Le réseau social 100% Burkinabè <span class="badge-secu">🔒 Sécurisé</span></p>
+<p style="font-size:13px; color:#555;">De Ouaga à Bobo, de Kaya à Gaoua,<br>tout le Burkina est connecté ici ! 🇧🇫</p>
+<div id="form-inscription">
+<p><b>Crée ton compte gratuit</b></p>
+<input id="nomUser" type="text" placeholder="Ton nom complet" maxlength="50">
+<input id="villeUser" type="text" placeholder="Ta ville : Ouaga, Bobo, Koudougou, Kaya..." maxlength="40">
+<input id="metierUser" type="text" placeholder="Tu es : Étudiant ou Fonctionnaire ?" maxlength="40">
+<input id="mdpUser" type="password" placeholder="Choisis un mot de passe (min 4 caractères)">
+<button class="btn-voir-mdp" onclick="voirMdp('mdpUser', this)">👁️ Voir le mot de passe</button>
+<button class="btn-inscrire" onclick="inscrire()">Créer mon compte FaraLink</button>
+<p style="font-size:13px;"><a href="#" onclick="afficherConnexion(); return false;" style="color:#009739; font-weight:bold;">J'ai déjà un compte ? Se connecter</a></p>
+</div>
+<div id="form-connexion" style="display:none;">
+<p><b>Bon retour sur FaraLink ! 👋</b></p>
+<p id="nomCompteSauve" style="color:#009739; font-weight:bold;"></p>
+<input id="mdpConnexion" type="password" placeholder="Tape ton mot de passe">
+<button class="btn-voir-mdp" onclick="voirMdp('mdpConnexion', this)">👁️ Voir le mot de passe</button>
+<button class="btn-connexion" onclick="seConnecter()">🔒 Se connecter</button>
+<p style="font-size:13px;"><a href="#" onclick="afficherInscription(); return false;" style="color:#EF2B2D; font-weight:bold;">Créer un nouveau compte</a></p>
+<p id="msgErreurMdp" style="color:#EF2B2D; font-weight:bold; display:none;">❌ Mauvais mot de passe ! Essaie encore.</p>
+</div>
+<div class="alerte-secu">🔒 <b>Règles FaraLink - Tout le Burkina :</b><br>• Ne partage jamais ton mot de passe<br>• Les insultes sont bloquées automatiquement</div>
+</div>
+</div>
+
+<div id="appli">
+<div class="header">
+<img src="logo.png" class="logo-header" onerror="this.style.display='none'">
+<div style="text-align:left; flex:1;"><h1>🇧🇫 FaraLink</h1><p>Le réseau social 100% Burkinabè</p></div>
+<div style="position:relative; cursor:pointer; font-size:24px;" onclick="ouvrirNotifications()"><span id="iconeCloche">🔔</span><span class="badge-cloche" id="badgeCloche">6</span></div>
+<div style="display:flex; gap:6px;"><span style="background:#e4e6eb; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold;">+</span><span style="background:#e4e6eb; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;">🔍</span><span style="background:#e4e6eb; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;" onclick="var m=document.getElementById('menuHamburger'); m.style.display=(m.style.display==='block'?'none':'block'); ">☰</span></div>
+</div>
+<div id="menuHamburger" style="display:none; position:absolute; top:70px; right:10px; background:white; padding:12px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 12px rgba(0,0,0,0.2); z-index:9999; min-width:170px;"><div onclick="document.getElementById('menuHamburger').style.display='none'; alert('Réglages cliqué !')" style="padding:8px; cursor:pointer;">⚙️ Réglages</div><div onclick="document.getElementById('menuHamburger').style.display='none'" style="padding:8px; cursor:pointer;">
+  <div onclick="document.getElementById('menuHamburger').style.display='none'; showPage('page-politique')" style="padding:10px; cursor:pointer;">📄 Politique de Confidentialité</div>
+  ❌ Fermer</div></div>
+<div id="page-politique" class="page" style="padding:20px; display:none;">
+<h2>Politique de Confidentialité - FaraLink</h2>
+<p><b>1. Données collectées</b><br>Nous collectons votre nom, votre photo de profil, vos publications, vos messages et vos commentaires, uniquement pour faire fonctionner FaraLink.</p>
+<p><b>2. Utilisation</b><br>Vos données servent uniquement à afficher votre profil, vos publications et à vous connecter avec vos amis. Nous ne vendons jamais vos données.</p>
+<p><b>3. Partage</b><br>Nous ne partageons jamais vos informations personnelles avec d'autres entreprises ou personnes, sauf si la loi l'exige.</p>
+<p><b>4. Sécurité</b><br>Vos données sont stockées en sécurité et ne sont pas partagées sans votre accord.</p>
+<p><b>5. Vos droits</b><br>Vous pouvez à tout moment modifier vos informations, supprimer vos publications et supprimer votre compte dans Réglages.</p>
+<p><b>6. Contact</b><br>Pour toute question, contactez-nous via FaraLink.</p>
+<p><i>Dernière mise à jour : Novembre 2026</i></p>
+<button onclick="showPage('page-accueil')">← Retour</button>
+</div>
+<div id="page-accueil" class="page active">
+<div class="barre-stories" id="barreStories"></div>
+<input type="file" id="inputStory" accept="image/*" onchange="ajouterStoryPhoto(this)">
+<div class="card">
+<div class="profil"><div class="avatar" id="avatarMoi">S</div><div><b id="nomAffiche">Sosthène</b><br><small id="villeAffiche">Bobo-Dioulasso • Fonctionnaire</small></div></div>
+<input id="monTexte" type="text" placeholder="Partage ton expérience avec tout le Burkina..." maxlength="500">
+<img id="apercuPhotoPost">
+<input type="file" id="inputPhotoPost" accept="image/*" onchange="preparerPhotoPost(this)">
+<button class="btn-photo-post" onclick="document.getElementById('inputPhotoPost').click()">📷 Ajouter une photo à ma publication</button>
+<button class="btn-publier" onclick="publier()">Publier pour tout le Burkina</button>
+<button class="btn-photo-post" style="background:#FFD700; color:#333; border:none;" onclick="ajouterStoryTexte()">✍️ Ajouter une Story Texte</button>
+</div>
+<div id="mesPublications"></div>
+<div class="card" id="carteKone">
+<div class="profil"><div class="avatar">K</div><div><b>M. Koné</b><br><small>Contrôleur du Travail • Ouaga</small></div></div>
+<p class="texte-post">Quand j'ai commencé, je n'avais personne pour m'expliquer les concours. Aujourd'hui je partage pour aider la jeunesse de tout le Burkina. Posez-moi vos questions !</p>
+<div class="actions"><button onclick="aimer(this, 124)">❤️ J'aime (124)</button><button onclick="voirCommentaires(this)">💬 Commenter (32)</button><button onclick="partagerPost(this)">↗️ Partager (<span class="nb-partage">0</span>)</button></div>
+<div class="zone-comment"><div class="liste-comments"></div><input class="input-comment" type="text" placeholder="Écris ton commentaire..." maxlength="200"><button class="btn-comment" onclick="ajouterCommentaire(this)">Envoyer 💬</button></div>
+</div>
+</div>
+
+<div id="page-mentors" class="page">
+<div class="card"><h2>👨🏾‍🏫 Nos Mentors du Burkina</h2><p>Des Burkinabè de toutes les régions qui ont réussi et qui veulent t'aider.</p><input id="rechercheMentor" type="text" placeholder="🔍 Cherche un mentor..." onkeyup="chercherMentor()"></div>
+<div id="listeMentors"></div>
+<div class="card"><h3>💬 Questions posées</h3><div id="mesQuestions"><p style="color:#777;">Aucune question pour le moment.</p></div></div>
+</div>
+
+<div id="page-concours" class="page">
+<div class="card"><h2>🔥 Concours du Burkina Faso 2026</h2><p>Tous les concours directs et professionnels - Pour tout le Burkina.</p><input id="rechercheConcours" type="text" placeholder="🔍 Cherche : ENAREF, Police, BEPC..." onkeyup="chercherConcours()"></div>
+<div id="listeConcours"></div>
+<div class="card"><h3>⭐ Mes concours suivis</h3><div id="mesConcoursSuivis"><p style="color:#777;">Tu ne suis aucun concours pour le moment.</p></div></div>
+</div>
+
+<div id="page-amis" class="page">
+<div class="card"><h2>👥 Mes Amis <span id="nbAmisTitre">(0)</span></h2><p>Retrouve tes amis de tout le Burkina Faso !</p></div>
+<div class="card" style="border:2px solid #009739;">
+<h3 style="margin:0;">🔍 Recherche d'amis - Tout le Burkina 🇧🇫</h3>
+<p style="font-size:13px; color:#555;">Trouve tes amis par nom, ville ou métier !</p>
+<input id="rechercheAmi" type="text" placeholder="🔍 Tape un nom : Sawadogo, Traoré, Awa..." onkeyup="rechercheAvancee()">
+<div style="display:flex; gap:8px; margin-top:10px;">
+<select id="filtreVille" onchange="rechercheAvancee()" style="flex:1;"><option value="">📍 Toutes les villes</option><option>Ouagadougou</option><option>Bobo-Dioulasso</option><option>Koudougou</option><option>Kaya</option><option>Banfora</option><option>Dédougou</option><option>Fada N'Gourma</option><option>Ouahigouya</option><option>Tenkodogo</option><option>Gaoua</option><option>Dori</option><option>Manga</option></select>
+<select id="filtreMetier" onchange="rechercheAvancee()" style="flex:1;"><option value="">💼 Tous les métiers</option><option>Étudiant</option><option>Étudiante</option><option>Fonctionnaire</option><option>Infirmière</option><option>Professeure</option><option>Professeur</option><option>Commerçant</option></select>
+</div>
+<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
+<button class="chip-ville actif" onclick="chipVille('', this)">Tout 🇧🇫</button>
+<button class="chip-ville" onclick="chipVille('Ouagadougou', this)">Ouaga</button>
+<button class="chip-ville" onclick="chipVille('Bobo-Dioulasso', this)">Bobo</button>
+<button class="chip-ville" onclick="chipVille('Koudougou', this)">Koudougou</button>
+<button class="chip-ville" onclick="chipVille('Kaya', this)">Kaya</button>
+<button class="chip-ville" onclick="chipVille('Banfora', this)">Banfora</button>
+</div>
+<p id="resultatRecherche" style="font-weight:bold; color:#009739; margin-top:10px;">20 Burkinabè trouvés 🇧🇫</p>
+<button class="btn-publier" style="background:#FF8C00; padding:10px;" onclick="reinitialiserRecherche()">🔄 Voir tout le monde</button>
+</div>
+<div class="card"><h3>📩 Demandes reçues <span id="badgeDemandes" style="background:#EF2B2D; color:white; padding:2px 8px; border-radius:10px; font-size:12px;">2</span></h3><div id="listeDemandes"></div></div>
+<div class="card"><h3>✅ Mes Amis</h3><div id="listeMesAmis"><p style="color:#777;">Tu n'as pas encore d'amis.</p></div></div>
+<div class="card"><h3>💡 Résultats de recherche / Suggestions - Tout le Burkina 🇧🇫</h3><div id="listeSuggestions"></div></div>
+<div class="card"><h3>👥 Les plus populaires au Burkina</h3><p style="font-size:13px; color:#777;">Ceux qui ont le plus d'amis !</p><div id="listePopulaires"></div></div>
+</div>
+
+<div id="page-messages" class="page">
+<div class="card"><h2>💬 Messages Privés</h2><p>Parle en privé avec tes amis et mentors. Personne d'autre ne voit ! 🔒</p><input id="rechercheMsg" type="text" placeholder="🔍 Cherche une conversation..." onkeyup="chercherConversation()"></div>
+<div id="listeConversations"></div>
+<div class="card" id="zoneChat" style="display:none;">
+<div class="header-chat">
+<button onclick="fermerChat()" style="background:#eee; border:none; padding:10px 14px; border-radius:50%; font-weight:bold; cursor:pointer; font-size:16px;">←</button>
+<div class="avatar" id="avatarChat" style="width:46px; height:46px; font-size:18px;">A</div>
+<div style="flex:1;"><b id="nomChat">Awa Sawadogo</b><br><small style="color:#009739;">● En ligne - Burkina Faso</small></div>
+</div>
+<div class="zone-chat" id="messagesChat"></div>
+<div class="barre-chat"><input id="inputMsg" type="text" placeholder="Écris ton message..." maxlength="500" onkeypress="if(event.key==='Enter') envoyerMessage()"><button class="btn-envoyer" onclick="envoyerMessage()">➤</button></div>
+</div>
+<div class="card" id="cardNouveauMsg"><h3>✍️ Nouvelle discussion</h3><p>Choisis quelqu'un pour lui parler :</p><div id="listeNouveauMsg"></div></div>
+</div>
+
+<div id="page-notifications" class="page">
+<div class="card"><h2>🔔 Notifications <span id="nbNotifTitre">(6)</span></h2><p>Ne rate plus jamais un concours au Burkina !</p>
+<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
+<button class="btn-filtre-notif actif" id="filtreTout" onclick="filtrerNotif('tout')">Tout</button>
+<button class="btn-filtre-notif" id="filtreConcours" onclick="filtrerNotif('concours')">🔥 Concours</button>
+<button class="btn-filtre-notif" id="filtreAmis" onclick="filtrerNotif('amis')">👥 Amis</button>
+<button class="btn-filtre-notif" id="filtreMessages" onclick="filtrerNotif('messages')">💬 Messages</button>
+</div>
+<button class="btn-publier" style="background:#FF8C00;" onclick="toutMarquerLu()">✅ Tout marquer comme lu</button>
+</div>
+<div class="card" style="background:#FFF3CD; border:1px solid #FFD700;"><h3 style="margin:0;">🔥 ALERTE CONCOURS URGENTE !</h3><p><b>ENAREF Cycle B est OUVERT !</b><br>Dernier délai : <b>Dans 7 jours !</b> Ne rate pas ça !<br><button class="btn-interesse" onclick="allerPageConcours()">Voir le concours →</button></p></div>
+<div id="listeNotifications"></div>
+<div class="card"><h3>⚙️ Mes alertes concours</h3>
+<div class="ligne-param"><span>🔥 Alertes ENAREF</span><div class="switch on" id="switchAlerteENAREF" onclick="toggleAlerte('ENAREF', this)"></div></div>
+<div class="ligne-param"><span>👮🏾 Alertes Police / Gendarmerie</span><div class="switch on" id="switchAlertePolice" onclick="toggleAlerte('Police', this)"></div></div>
+<div class="ligne-param"><span>🩺 Alertes Santé (IDS)</span><div class="switch on" id="switchAlerteSante" onclick="toggleAlerte('Santé', this)"></div></div>
+<div class="ligne-param"><span>📚 Alertes ENS / Enseignement</span><div class="switch" id="switchAlerteENS" onclick="toggleAlerte('ENS', this)"></div></div>
+</div>
+</div>
+
+<div id="page-profil" class="page">
+<div class="card" style="text-align:center; overflow:hidden;">
+<div class="cover"></div>
+<div class="avatar avatar-grand" id="avatarProfil" style="margin-top:-50px; background:white;">S</div>
+<h2 id="nomProfil">Sosthène</h2>
+<p id="villeProfil">Bobo-Dioulasso</p>
+<p>⭐ Membre FaraLink depuis aujourd'hui</p>
+<p>🔒 Compte protégé par mot de passe</p>
+<p id="statutProfilPublic">👁️ Profil : Public - Tout le Burkina peut voir</p>
+<p>🇧🇫 Fier Burkinabè • Burkina Faso</p>
+<input type="file" id="inputPhoto" accept="image/*" onchange="changerPhoto(this)">
+<button class="btn-photo" onclick="document.getElementById('inputPhoto').click()">📸 Changer ma photo de profil</button>
+<br><br>
+<button class="btn-publier" style="background:#EF2B2D;" onclick="seDeconnecter()">🔒 Se déconnecter (verrouiller)</button>
+</div>
+<div class="card" style="text-align:center;"><h3>🏆 Mes stats</h3><p><b id="nbPub">0</b> Publications • <b id="nbAmisProfil">0</b> Amis • <b id="nbStoriesProfil">0</b> Stories • <b id="nbPartagesProfil">0</b> Partages</p></div>
+</div>
+
+<div id="page-parametres" class="page">
+<div class="card"><h2>⚙️ Paramètres</h2><p>Règle FaraLink comme tu veux !</p></div>
+<div class="card"><h3>🎨 Apparence</h3>
+<div class="ligne-param"><span>🌙 Mode Sombre <br><small style="color:#777;">Pour les yeux la nuit</small></span><div class="switch" id="switchSombre" onclick="toggleSombre()"></div></div>
+<div class="ligne-param"><span>🔔 Notifications <br><small style="color:#777;">Être prévenu des concours</small></span><div class="switch on" id="switchNotif" onclick="toggleNotif()"></div></div>
+<div class="ligne-param"><span>👁️ Profil Public <br><small style="color:#777;">Tout le Burkina peut voir ton profil</small></span><div class="switch on" id="switchPublic" onclick="togglePublic()"></div></div>
+<label>🌍 Langue</label>
+<select id="choixLangue" onchange="changerLangue()">
+<option value="fr">🇫🇷 Français</option>
+<option value="dioula">🇧🇫 Dioula</option>
+<option value="moore">🇧🇫 Mooré</option>
+</select>
+<p id="msgLangue" style="font-size:13px; color:#009739; font-weight:bold;"></p>
+</div>
+<div class="card"><h3>✏️ Mon compte</h3>
+<label>Ton nom</label><input id="paramNom" type="text" maxlength="50">
+<label>Ta ville</label><input id="paramVille" type="text" maxlength="40">
+<label>Ton métier</label><input id="paramMetier" type="text" maxlength="40">
+<button class="btn-publier" onclick="sauvegarderProfil()">💾 Sauvegarder mes infos</button>
+<button class="btn-param" onclick="changerMdp()">🔑 Changer mon mot de passe <span>›</span></button>
+<button class="btn-param" onclick="changerPhotoDepuisParam()">📸 Changer ma photo de profil <span>›</span></button>
+</div>
+<div class="card"><h3>ℹ️ À propos</h3>
+<p><b>FaraLink v1.0</b><br>Créé par Sosthène Rodrigue NIADA<br>🇧🇫 Burkina Faso - Pour tout le pays</p>
+<button class="btn-param" onclick="alert('FaraLink v1.0 - Créé avec ❤️ au Burkina Faso, pour tout le Burkina !')">📖 Qui a créé FaraLink ? <span>›</span></button>
+</div>
+<div class="card"><h3>⚠️ Zone dangereuse</h3>
+<button class="btn-danger" onclick="effacerPublications()">🗑️ Effacer toutes mes publications</button>
+<button class="btn-danger" style="background:#333;" onclick="reinitialiserTout()">🔄 Tout effacer et recommencer à zéro</button>
+</div>
+</div>
+
+<div class="menu-bas">
+<button id="btn-accueil" class="actif" onclick="allerPage('accueil', this)"><span class="icone">🏠</span>Accueil</button>
+<button onclick="allerPage('mentors', this)"><span class="icone">👨🏾‍🏫</span>Mentors</button>
+<button onclick="allerPage('concours', this)"><span class="icone">🔥</span>Concours</button>
+<button onclick="allerPage('amis', this)" style="position:relative;"><span class="icone">👥</span>Amis <span class="badge-notif" id="badgeAmisBas">2</span></button>
+<button onclick="allerPage('messages', this)" style="position:relative;"><span class="icone">💬</span>Messages <span class="badge-notif" id="badgeMsgBas">3</span></button>
+<button onclick="allerPage('profil', this)"><span class="icone">👤</span>Profil</button>
+</div>
+</div>
+
+<div id="visionneuseStory">
+<div class="barre-progress-story"><div id="progressStory"></div></div>
+<div style="display:flex; align-items:center; gap:10px; padding:0 15px; color:white;">
+<div class="avatar" id="visionAvatar" style="width:44px; height:44px; font-size:18px;">A</div>
+<div style="flex:1;"><b id="visionNom">Awa Sawadogo</b><br><small id="visionVille" style="opacity:0.8;">Ouagadougou • il y a 2h</small></div>
+<button onclick="fermerStory()" style="background:white; color:black; border:none; padding:8px 12px; border-radius:50%; font-weight:bold; cursor:pointer;">✕</button>
+</div>
+<img id="visionImg" class="img-visionneuse" style="display:none;">
+<div id="visionTexte" class="texte-story-centre" style="display:none;"></div>
+<div style="display:flex; gap:8px; padding:15px;">
+<input id="inputReponseStory" type="text" placeholder="Répondre à la story..." style="margin:0; flex:1; border-radius:25px; background:white; color:black;">
+<button onclick="aimerStory()" id="btnCoeurStory" style="background:none; border:none; font-size:28px; cursor:pointer;">🤍</button>
+<button onclick="repondreStory()" style="background:#009739; color:white; border:none; padding:12px 18px; border-radius:25px; font-weight:bold; cursor:pointer;">Envoyer</button>
+</div>
+</div>
+
+<div id="modalPartager">
+<div class="boite-partager">
+<div style="display:flex; justify-content:space-between; align-items:center;"><h3 style="margin:0;">↗️ Partager cette publication</h3><button onclick="fermerPartager()" style="background:#eee; border:none; padding:8px 12px; border-radius:50%; font-weight:bold; cursor:pointer;">✕</button></div>
+<p style="font-size:13px; color:#777;">Tu partages avec tout le Burkina 🇧🇫</p>
+<div class="apercu-partage" id="apercuPartage">...</div>
+<button class="btn-partage-opt" onclick="repartagerSurFaraLink()">🔄 <span>Repartager sur FaraLink<br><small style="font-weight:normal; color:#777;">Tes amis verront cette publication sur ton mur</small></span></button>
+<button class="btn-partage-opt" onclick="partagerWhatsApp()">💬 <span>Envoyer sur WhatsApp<br><small style="font-weight:normal; color:#777;">Ouvrir WhatsApp avec le texte déjà écrit</small></span></button>
+<button class="btn-partage-opt" onclick="partagerFacebook()">📘 <span>Partager sur Facebook<br><small style="font-weight:normal; color:#777;">Ouvrir Facebook</small></span></button>
+<button class="btn-partage-opt" onclick="copierTextePartage()">📋 <span>Copier le texte<br><small style="font-weight:normal; color:#777;">Pour coller dans SMS, TikTok, partout</small></span></button>
+<button class="btn-partage-opt" onclick="partagerEnMessage()">💌 <span>Envoyer en Message Privé<br><small style="font-weight:normal; color:#777;">Envoyer à Awa, Ibrahim ou M. Koné en privé</small></span></button>
+<button class="btn-publier" style="background:#eee; color:#333; margin-top:12px;" onclick="fermerPartager()">Annuler</button>
+</div>
+</div>
+
+<script>
+var nomConnecte = "Sosthène";
+var photoConnecte = "";
+var photoPostTemp = "";
+var mesPosts = [];
+var tentatives = 0;
+var totalPartages = 0;
+function nettoyerTexte(texte) { var div = document.createElement("div"); div.textContent = texte; return div.innerHTML; }
+function contientInsulte(texte) { var mot = texte.toLowerCase(); var interdits = ["idiot", "con", "imbecile", "imbécile", "stupide", "bête", "sot", "merde", "putain", "connard", "salop", "batard", "bâtard", "foutre", "enculé"]; for (var i = 0; i < interdits.length; i++) { if (mot.indexOf(interdits[i]) !== -1) return true; } return false; }
+function voirMdp(id, bouton) { var champ = document.getElementById(id); if (champ.type == "password") { champ.type = "text"; bouton.innerHTML = "🙈 Cacher"; } else { champ.type = "password"; bouton.innerHTML = "👁️ Voir le mot de passe"; } }
+function afficherConnexion() { document.getElementById("form-inscription").style.display = "none"; document.getElementById("form-connexion").style.display = "block"; var nom = localStorage.getItem("fara_nom"); document.getElementById("nomCompteSauve").innerHTML = nom ? "Compte : " + nom : "Aucun compte trouvé !"; }
+function afficherInscription() { document.getElementById("form-connexion").style.display = "none"; document.getElementById("form-inscription").style.display = "block"; }
+function changerMdp() { var ancien = prompt("Tape ton ANCIEN mot de passe :"); if (ancien == null) return; if (ancien !== localStorage.getItem("fara_mdp")) { alert("❌ Mauvais ancien mot de passe !"); return; } var nouveau = prompt("Tape ton NOUVEAU mot de passe (min 4 caractères) :"); if (nouveau == null || nouveau.length < 4) { alert("Mot de passe trop court !"); return; } localStorage.setItem("fara_mdp", nouveau); alert("✅ Mot de passe changé ! 🔒"); }
+
+// ===== PARTAGER - ACTIVÉ =====
+var postAPartager = null;
+var boutonPartageActuel = null;
+var texteAPartager = "";
+var auteurAPartager = "";
+function partagerPost(bouton) {
+  boutonPartageActuel = bouton;
+  var carte = bouton.closest(".card");
+  var texteEl = carte.querySelector(".texte-post");
+  texteAPartager = texteEl ? texteEl.textContent : "Regarde cette publication sur FaraLink !";
+  var nomEl = carte.querySelector(".profil b");
+  auteurAPartager = nomEl ? nomEl.textContent : "FaraLink";
+  postAPartager = { texte: texteAPartager, auteur: auteurAPartager };
+  document.getElementById("apercuPartage").innerHTML = "<b>" + nettoyerTexte(auteurAPartager) + " :</b><br>" + nettoyerTexte(texteAPartager.substring(0, 200));
+  document.getElementById("modalPartager").classList.add("ouvert");
+}
+function fermerPartager() { document.getElementById("modalPartager").classList.remove("ouvert"); }
+function incrementerPartage() {
+  if (boutonPartageActuel) {
+    var span = boutonPartageActuel.querySelector(".nb-partage");
+    var nb = span ? parseInt(span.innerHTML) + 1 : 1;
+    if (span) span.innerHTML = nb;
+    boutonPartageActuel.classList.add("partage");
+  }
+  totalPartages++; try { localStorage.setItem("fara_partages", totalPartages); } catch(e) {}
+  document.getElementById("nbPartagesProfil").innerHTML = totalPartages;
+}
+function repartagerSurFaraLink() {
+  var monComment = prompt("Ajoute un petit mot avant de repartager (optionnel) :\nEx: Très important, lisez ça !", "");
+  var texteFinal = (monComment ? monComment + "\n\n--- Partagé de " + auteurAPartager + " ---\n" : "🔄 Partagé de " + auteurAPartager + " :\n") + texteAPartager;
+  var nouveauPost = { texte: texteFinal, image: "", date: "À l'instant • Burkina Faso • Partagé" };
+  mesPosts.unshift(nouveauPost); sauvegarderPosts();
+  var zone = document.getElementById("mesPublications"); zone.prepend(creerCartePost(nouveauPost));
+  document.getElementById("nbPub").innerHTML = mesPosts.length;
+  incrementerPartage(); fermerPartager();
+  alert("✅ Repartagé sur FaraLink ! Tes amis vont le voir en haut de ton mur ! 🇧🇫");
+  window.scrollTo(0,0);
+}
+function partagerWhatsApp() {
+  var message = "🇧🇫 Vu sur FaraLink - " + auteurAPartager + " :\n\n" + texteAPartager + "\n\nRejoins FaraLink, le réseau 100% Burkinabè !";
+  window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank");
+  incrementerPartage(); fermerPartager();
+}
+function partagerFacebook() {
+  var message = "Vu sur FaraLink : " + texteAPartager;
+  window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://faralink.bf") + "&quote=" + encodeURIComponent(message), "_blank");
+  incrementerPartage(); fermerPartager(); alert("Facebook ouvert ! Colle le texte si besoin :\n\n" + texteAPartager.substring(0,150));
+}
+function copierTextePartage() {
+  var texteComplet = "🇧🇫 " + auteurAPartager + " sur FaraLink :\n\n" + texteAPartager + "\n\n— Vu sur FaraLink, le réseau 100% Burkinabè";
+  if (navigator.clipboard) { navigator.clipboard.writeText(texteComplet).then(function(){ alert("📋 Copié ! Colle-le où tu veux : WhatsApp, SMS, TikTok..."); }); }
+  else { var ta = document.createElement("textarea"); ta.value = texteComplet; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); alert("📋 Copié !"); }
+  incrementerPartage(); fermerPartager();
+}
+function partagerEnMessage() {
+  fermerPartager();
+  var choix = prompt("Envoyer à qui en privé ?\nTape : 1 = Awa (Ouaga)\n2 = Ibrahim (Bobo)\n3 = M. Koné (Mentor)", "1");
+  var idx = 0; if (choix == "2") idx = 2; if (choix == "3") idx = 1;
+  if (conversations[idx]) {
+    conversations[idx].messages.push({ de: "moi", texte: "Regarde ce que j'ai vu sur FaraLink, de " + auteurAPartager + " : " + texteAPartager.substring(0,200) });
+    conversations[idx].dernier = "Publication partagée..."; sauvegarderMessages(); afficherConversations();
+    incrementerPartage(); alert("💌 Envoyé en message privé à " + conversations[idx].nom + " !");
+    var b = document.querySelectorAll(".menu-bas button")[4]; allerPage('messages', b); ouvrirChat(idx);
+  }
+}
+
+// ===== 5. RECHERCHE D'AMIS =====
+var baseAmisBurkina = [
+  { nom: "Awa Sawadogo", ville: "Ouagadougou", metier: "Étudiante", lettre: "A", couleur: "#EF2B2D", amisCommuns: "12 amis en commun", nbAmis: 342 },
+  { nom: "Ibrahim Traoré", ville: "Bobo-Dioulasso", metier: "Étudiant", lettre: "I", couleur: "#009739", amisCommuns: "8 amis en commun", nbAmis: 210 },
+  { nom: "Mariam Ouédraogo", ville: "Koudougou", metier: "Infirmière", lettre: "M", couleur: "#FF8C00", amisCommuns: "5 amis en commun", nbAmis: 189 },
+  { nom: "Yacouba Diallo", ville: "Kaya", metier: "Commerçant", lettre: "Y", couleur: "#6A0DAD", amisCommuns: "15 amis en commun", nbAmis: 410 },
+  { nom: "Fatimata Koné", ville: "Banfora", metier: "Professeure", lettre: "F", couleur: "#008080", amisCommuns: "3 amis en commun", nbAmis: 156 },
+  { nom: "Abdoulaye Sanou", ville: "Dédougou", metier: "Étudiant", lettre: "A", couleur: "#FF1493", amisCommuns: "9 amis en commun", nbAmis: 98 },
+  { nom: "Salimata Zongo", ville: "Fada N'Gourma", metier: "Étudiante", lettre: "S", couleur: "#009739", amisCommuns: "6 amis en commun", nbAmis: 134 },
+  { nom: "Issouf Kaboré", ville: "Ouahigouya", metier: "Fonctionnaire", lettre: "I", couleur: "#EF2B2D", amisCommuns: "11 amis en commun", nbAmis: 276 },
+  { nom: "Aminata Diallo", ville: "Ouagadougou", metier: "Étudiante", lettre: "A", couleur: "#FF8C00", amisCommuns: "7 amis en commun", nbAmis: 201 },
+  { nom: "Ousmane Sawadogo", ville: "Tenkodogo", metier: "Étudiant", lettre: "O", couleur: "#008080", amisCommuns: "4 amis en commun", nbAmis: 87 },
+  { nom: "Rokia Traoré", ville: "Gaoua", metier: "Professeure", lettre: "R", couleur: "#6A0DAD", amisCommuns: "10 amis en commun", nbAmis: 165 },
+  { nom: "Moussa Ouédraogo", ville: "Dori", metier: "Fonctionnaire", lettre: "M", couleur: "#009739", amisCommuns: "2 amis en commun", nbAmis: 76 },
+  { nom: "Aïcha Kaboré", ville: "Manga", metier: "Infirmière", lettre: "A", couleur: "#EF2B2D", amisCommuns: "13 amis en commun", nbAmis: 298 },
+  { nom: "Karim Ouattara", ville: "Ouagadougou", metier: "Étudiant", lettre: "K", couleur: "#009739", amisCommuns: "18 amis en commun", nbAmis: 320 },
+  { nom: "Fatoumata Sanou", ville: "Bobo-Dioulasso", metier: "Étudiante", lettre: "F", couleur: "#FF1493", amisCommuns: "6 amis en commun", nbAmis: 143 },
+  { nom: "Adama Diallo", ville: "Koudougou", metier: "Commerçant", lettre: "A", couleur: "#FF8C00", amisCommuns: "9 amis en commun", nbAmis: 187 },
+  { nom: "Balkissa Sawadogo", ville: "Kaya", metier: "Étudiante", lettre: "B", couleur: "#6A0DAD", amisCommuns: "5 amis en commun", nbAmis: 112 },
+  { nom: "Seydou Traoré", ville: "Banfora", metier: "Fonctionnaire", lettre: "S", couleur: "#008080", amisCommuns: "14 amis en commun", nbAmis: 245 },
+  { nom: "Nafissatou Zongo", ville: "Ouahigouya", metier: "Étudiante", lettre: "N", couleur: "#EF2B2D", amisCommuns: "8 amis en commun", nbAmis: 176 },
+  { nom: "Youssouf Koné", ville: "Dédougou", metier: "Étudiant", lettre: "Y", couleur: "#009739", amisCommuns: "3 amis en commun", nbAmis: 94 }
+];
+function rechercheAvancee() {
+  var mot = document.getElementById("rechercheAmi").value.toLowerCase();
+  var ville = document.getElementById("filtreVille").value;
+  var metier = document.getElementById("filtreMetier").value;
+  var resultats = [];
+  for (var i = 0; i < baseAmisBurkina.length; i++) { var a = baseAmisBurkina[i]; var okNom = mot == "" || a.nom.toLowerCase().indexOf(mot) !== -1 || a.ville.toLowerCase().indexOf(mot) !== -1 || a.metier.toLowerCase().indexOf(mot) !== -1; var okVille = ville == "" || a.ville == ville; var okMetier = metier == "" || a.metier == metier; if (okNom && okVille && okMetier) resultats.push(a); }
+  document.getElementById("resultatRecherche").innerHTML = resultats.length + " Burkinabè trouvé(s) 🇧🇫" + (ville ? " à " + ville : "") + (metier ? " • " + metier : "");
+  var zone = document.getElementById("listeSuggestions"); zone.innerHTML = "";
+  if (resultats.length == 0) { zone.innerHTML = "<p style='color:#777;'>Aucun résultat.</p>"; return; }
+  for (var j = 0; j < resultats.length; j++) { var r = resultats[j]; var div = document.createElement("div"); div.className = "carte-ami"; div.innerHTML = '<div class="avatar" style="background:' + r.couleur + '; width:50px; height:50px; font-size:19px;">' + r.lettre + '</div><div style="flex:1;"><b>' + r.nom + '</b><br><small>📍 ' + r.ville + ' • 💼 ' + r.metier + '</small><br><small style="color:#777;">' + r.amisCommuns + ' • ' + r.nbAmis + ' amis</small></div><div style="display:flex; flex-direction:column; gap:5px;"><button class="btn-ami" onclick="demanderAmi(this, \'' + r.nom + '\')">+ Ajouter</button><button class="btn-ami" style="background:#FF8C00;" onclick="parlerAmiRecherche(\'' + r.nom + '\', \'' + r.ville + '\', \'' + r.lettre + '\', \'' + r.couleur + '\')">💬 Parler</button></div>'; zone.appendChild(div); }
+}
+function chipVille(ville, bouton) { document.getElementById("filtreVille").value = ville; var chips = document.querySelectorAll(".chip-ville"); for (var i = 0; i < chips.length; i++) chips[i].classList.remove("actif"); bouton.classList.add("actif"); rechercheAvancee(); }
+function reinitialiserRecherche() { document.getElementById("rechercheAmi").value = ""; document.getElementById("filtreVille").value = ""; document.getElementById("filtreMetier").value = ""; var chips = document.querySelectorAll(".chip-ville"); for (var i = 0; i < chips.length; i++) chips[i].classList.remove("actif"); chips[0].classList.add("actif"); rechercheAvancee(); }
+function parlerAmiRecherche(nom, ville, lettre, couleur) { creerConversation(nom, ville, lettre, couleur); var b = document.querySelectorAll(".menu-bas button")[4]; allerPage('messages', b); }
+function afficherPopulaires() { var zone = document.getElementById("listePopulaires"); zone.innerHTML = ""; var tri = baseAmisBurkina.slice().sort(function(a,b){ return b.nbAmis - a.nbAmis; }).slice(0,5); for (var i = 0; i < tri.length; i++) { var p = tri[i]; var div = document.createElement("div"); div.className = "carte-ami"; div.innerHTML = '<div style="font-weight:bold; font-size:20px; color:#FFD700;">#' + (i+1) + '</div><div class="avatar" style="background:' + p.couleur + '; width:44px; height:44px;">' + p.lettre + '</div><div style="flex:1;"><b>' + p.nom + '</b><br><small>' + p.ville + ' • ' + p.nbAmis + ' amis • ⭐ Populaire</small></div><button class="btn-ami" onclick="demanderAmi(this, \'' + p.nom + '\')">+ Ajouter</button>'; zone.appendChild(div); } }
+
+// ===== 4. NOTIFICATIONS =====
+var notifications = [
+  { type: "concours", icone: "🔥", couleur: "#EF2B2D", titre: "ENAREF Cycle B est OUVERT !", texte: "Dernier délai dans 7 jours ! Diplôme : BAC. Inscris-toi vite !", temps: "il y a 10 min", lu: false, action: "concours" },
+  { type: "concours", icone: "👮🏾", couleur: "#009739", titre: "Police Nationale : Résultats bientôt !", texte: "Les résultats du concours Police seront affichés cette semaine.", temps: "il y a 1h", lu: false, action: "concours" },
+  { type: "amis", icone: "👥", couleur: "#009739", titre: "Karim Ouattara veut être ton ami", texte: "Karim de Ouagadougou t'a envoyé une demande d'ami.", temps: "il y a 2h", lu: false, action: "amis" },
+  { type: "messages", icone: "💬", couleur: "#FF8C00", titre: "Awa Sawadogo t'a envoyé un message", texte: "\"Salut ! Tu as vu le concours ENAREF ?\"", temps: "il y a 3h", lu: false, action: "messages" },
+  { type: "concours", icone: "🩺", couleur: "#008080", titre: "IDS Infirmier : Inscriptions ouvertes", texte: "Pour tout le Burkina, BAC C / D. 3 ans de formation.", temps: "il y a 5h", lu: true, action: "concours" },
+  { type: "amis", icone: "📸", couleur: "#6A0DAD", titre: "Ibrahim a ajouté une Story", texte: "Ibrahim de Bobo a publié : \"Bobo est trop beau !\"", temps: "il y a 6h", lu: true, action: "accueil" },
+  { type: "concours", icone: "⚖️", couleur: "#FF8C00", titre: "ENAM : Bientôt ouvert !", texte: "Prépare tes dossiers : BAC, Licence ou Master selon le cycle.", temps: "Hier", lu: true, action: "concours" }
+];
+var filtreNotifActuel = "tout";
+function sauvegarderNotif() { try { localStorage.setItem("fara_notifs", JSON.stringify(notifications)); } catch(e) {} }
+function chargerNotif() { try { var s = localStorage.getItem("fara_notifs"); if (s) notifications = JSON.parse(s); } catch(e) {} afficherNotifications(); }
+function afficherNotifications() { var zone = document.getElementById("listeNotifications"); zone.innerHTML = ""; var nonLues = 0; for (var i = 0; i < notifications.length; i++) if (!notifications[i].lu) nonLues++; document.getElementById("nbNotifTitre").innerHTML = "(" + notifications.length + ")"; document.getElementById("badgeCloche").innerHTML = nonLues; document.getElementById("badgeCloche").style.display = nonLues == 0 ? "none" : "block"; document.getElementById("iconeCloche").className = nonLues > 0 ? "cloche-anime" : ""; var compteur = 0; for (var j = 0; j < notifications.length; j++) { var n = notifications[j]; if (filtreNotifActuel != "tout" && n.type != filtreNotifActuel) continue; compteur++; var div = document.createElement("div"); div.className = "card notif-card " + (n.lu ? "" : "non-lue"); div.innerHTML = '<div class="icone-notif" style="background:' + n.couleur + ';">' + n.icone + '</div><div style="flex:1;"><b>' + nettoyerTexte(n.titre) + '</b>' + (n.lu ? "" : ' <span style="background:#EF2B2D; color:white; font-size:10px; padding:2px 6px; border-radius:8px;">NOUVEAU</span>') + '<br><span style="font-size:14px;">' + nettoyerTexte(n.texte) + '</span><br><small style="color:#777;">' + n.temps + ' • Tout le Burkina 🇧🇫</small></div>'; div.onclick = (function(idx, act){ return function(){ cliquerNotif(idx, act); }; })(j, n.action); zone.appendChild(div); } if (compteur == 0) zone.innerHTML = '<div class="card"><p style="color:#777;">Aucune notification.</p></div>'; }
+function cliquerNotif(index, action) { notifications[index].lu = true; sauvegarderNotif(); afficherNotifications(); if (action == "concours") { var b = document.querySelectorAll(".menu-bas button")[2]; allerPage('concours', b); } else if (action == "amis") { var b2 = document.querySelectorAll(".menu-bas button")[3]; allerPage('amis', b2); } else if (action == "messages") { var b3 = document.querySelectorAll(".menu-bas button")[4]; allerPage('messages', b3); } else { var b4 = document.querySelectorAll(".menu-bas button")[0]; allerPage('accueil', b4); } }
+function ouvrirNotifications() { var pages = document.querySelectorAll(".page"); for (var i = 0; i < pages.length; i++) pages[i].classList.remove("active"); document.getElementById("page-notifications").classList.add("active"); window.scrollTo(0,0); }
+function allerPageConcours() { var b = document.querySelectorAll(".menu-bas button")[2]; allerPage('concours', b); }
+function filtrerNotif(type) { filtreNotifActuel = type; document.getElementById("filtreTout").className = "btn-filtre-notif " + (type=="tout" ? "actif" : ""); document.getElementById("filtreConcours").className = "btn-filtre-notif " + (type=="concours" ? "actif" : ""); document.getElementById("filtreAmis").className = "btn-filtre-notif " + (type=="amis" ? "actif" : ""); document.getElementById("filtreMessages").className = "btn-filtre-notif " + (type=="messages" ? "actif" : ""); afficherNotifications(); }
+function toutMarquerLu() { for (var i = 0; i < notifications.length; i++) notifications[i].lu = true; sauvegarderNotif(); afficherNotifications(); alert("✅ Toutes les notifications sont lues !"); }
+function toggleAlerte(nom, el) { if (el.classList.contains("on")) { el.classList.remove("on"); alert("🔕 Alertes " + nom + " désactivées"); } else { el.classList.add("on"); alert("🔔 Alertes " + nom + " activées !"); } }
+function ajouterNotifConcours(titre, texte) { notifications.unshift({ type: "concours", icone: "🔥", couleur: "#EF2B2D", titre: titre, texte: texte, temps: "À l'instant", lu: false, action: "concours" }); sauvegarderNotif(); afficherNotifications(); }
+
+// ===== 3. STORIES =====
+var stories = [
+  { nom: "Awa Sawadogo", ville: "Ouagadougou • il y a 2h", lettre: "A", couleur: "#EF2B2D", type: "texte", contenu: "🇧🇫 Je révise pour ENAREF ! Qui révise avec moi ? 💪📚", vu: false },
+  { nom: "Ibrahim Traoré", ville: "Bobo-Dioulasso • il y a 4h", lettre: "I", couleur: "#009739", type: "texte", contenu: "Bobo est trop beau aujourd'hui ! ☀️🇧🇫", vu: false },
+  { nom: "M. Koné", ville: "Ouaga • il y a 5h", lettre: "K", couleur: "#009739", type: "texte", contenu: "Nouveau conseil : Ne jamais abandonner ! 🔥", vu: false },
+  { nom: "Mariam Ouédraogo", ville: "Koudougou • il y a 6h", lettre: "M", couleur: "#FF8C00", type: "texte", contenu: "J'ai réussi mon examen ! Merci FaraLink ! 🎉", vu: false },
+  { nom: "Yacouba Diallo", ville: "Kaya • il y a 8h", lettre: "Y", couleur: "#6A0DAD", type: "texte", contenu: "Kaya en force ! 💪🇧🇫", vu: true },
+  { nom: "Fatimata Koné", ville: "Banfora • il y a 10h", lettre: "F", couleur: "#008080", type: "texte", contenu: "Banfora, les cascades sont magnifiques ! 🌊", vu: true }
+];
+var mesStories = [];
+var timerStory = null;
+function sauvegarderStories() { try { localStorage.setItem("fara_mes_stories", JSON.stringify(mesStories)); } catch(e) {} }
+function chargerStories() { try { var s = localStorage.getItem("fara_mes_stories"); if (s) mesStories = JSON.parse(s); } catch(e) {} afficherStories(); }
+function afficherStories() { var barre = document.getElementById("barreStories"); barre.innerHTML = ""; var divMoi = document.createElement("div"); divMoi.className = "une-story"; var photoMoi = photoConnecte != "" ? '<img src="' + photoConnecte + '">' : '<div class="avatar-story">' + nomConnecte.charAt(0).toUpperCase() + '</div>'; var aUneStory = mesStories.length > 0 ? "" : "vu"; divMoi.innerHTML = '<div class="cercle-story ' + aUneStory + '" onclick="cliquerMaStory()">' + photoMoi + '<div class="btn-plus-story">+</div></div><div class="nom-story">Ma Story</div>'; barre.appendChild(divMoi); for (var i = 0; i < stories.length; i++) { var st = stories[i]; var div = document.createElement("div"); div.className = "une-story"; div.innerHTML = '<div class="cercle-story ' + (st.vu ? "vu" : "") + '"><div class="avatar-story" style="background:' + st.couleur + '">' + st.lettre + '</div></div><div class="nom-story">' + st.nom.split(" ")[0] + '</div>'; div.onclick = (function(idx){ return function(){ ouvrirStory(idx, false); }; })(i); barre.appendChild(div); } for (var j = 0; j < mesStories.length; j++) { var ms = mesStories[j]; var div2 = document.createElement("div"); div2.className = "une-story"; var contenuImg = ms.type == "photo" ? '<img src="' + ms.contenu + '">' : '<div class="avatar-story" style="background:#009739; font-size:14px;">📸</div>'; div2.innerHTML = '<div class="cercle-story">' + contenuImg + '</div><div class="nom-story">Moi</div>'; div2.onclick = (function(idx){ return function(){ ouvrirStory(idx, true); }; })(j); barre.appendChild(div2); } document.getElementById("nbStoriesProfil").innerHTML = mesStories.length; }
+function cliquerMaStory() { var choix = confirm("Tu veux ajouter une Story ?\nOK = Photo 📸\nAnnuler = Texte ✍️"); if (choix) { document.getElementById("inputStory").click(); } else { ajouterStoryTexte(); } }
+function ajouterStoryTexte() { var texte = prompt("Écris ta Story (elle reste 24h) :"); if (texte == null || texte.trim() == "") return; if (contientInsulte(texte)) { alert("🚫 Pas d'insultes !"); return; } mesStories.unshift({ nom: nomConnecte, ville: "Maintenant • Burkina Faso", lettre: nomConnecte.charAt(0).toUpperCase(), couleur: "#009739", type: "texte", contenu: texte, vu: false }); sauvegarderStories(); afficherStories(); alert("✅ Ta Story est publiée ! 📸"); }
+function ajouterStoryPhoto(input) { var fichier = input.files[0]; if (!fichier) return; if (fichier.size > 2000000) { alert("Photo trop lourde !"); return; } var lecteur = new FileReader(); lecteur.onload = function(e) { mesStories.unshift({ nom: nomConnecte, ville: "Maintenant • Burkina Faso", lettre: nomConnecte.charAt(0).toUpperCase(), couleur: "#009739", type: "photo", contenu: e.target.result, vu: false }); sauvegarderStories(); afficherStories(); alert("✅ Ta Story Photo est publiée ! 📸🇧🇫"); }; lecteur.readAsDataURL(fichier); }
+function ouvrirStory(index, cEstMoi) { var st = cEstMoi ? mesStories[index] : stories[index]; if (!cEstMoi) stories[index].vu = true; document.getElementById("visionneuseStory").style.display = "flex"; document.getElementById("visionAvatar").innerHTML = st.lettre; document.getElementById("visionAvatar").style.background = st.couleur; document.getElementById("visionNom").innerHTML = nettoyerTexte(st.nom); document.getElementById("visionVille").innerHTML = nettoyerTexte(st.ville); document.getElementById("btnCoeurStory").innerHTML = "🤍"; if (st.type == "photo") { document.getElementById("visionImg").style.display = "block"; document.getElementById("visionImg").src = st.contenu; document.getElementById("visionTexte").style.display = "none"; } else { document.getElementById("visionImg").style.display = "none"; document.getElementById("visionTexte").style.display = "flex"; document.getElementById("visionTexte").innerHTML = nettoyerTexte(st.contenu); } afficherStories(); var progress = 0; clearInterval(timerStory); timerStory = setInterval(function() { progress += 1; document.getElementById("progressStory").style.width = progress + "%"; if (progress >= 100) { fermerStory(); } }, 50); }
+function fermerStory() { clearInterval(timerStory); document.getElementById("visionneuseStory").style.display = "none"; }
+function aimerStory() { document.getElementById("btnCoeurStory").innerHTML = "❤️"; alert("❤️ Tu as aimé cette Story !"); }
+function repondreStory() { var texte = document.getElementById("inputReponseStory").value.trim(); if (texte == "") { alert("Écris ta réponse !"); return; } if (contientInsulte(texte)) { alert("🚫 Pas d'insultes !"); return; } alert("💬 Réponse envoyée !"); document.getElementById("inputReponseStory").value = ""; fermerStory(); }
+
+// ===== 2. MESSAGERIE =====
+var conversations = [
+  { nom: "Awa Sawadogo", ville: "Ouagadougou", lettre: "A", couleur: "#EF2B2D", dernier: "Salut ! Tu as vu le concours ENAREF ?", heure: "10:45", nonLus: 2, messages: [ { de: "lui", texte: "Salut Sosthène ! Ça va ?" }, { de: "lui", texte: "Tu as vu le concours ENAREF ? Il est ouvert !" }, { de: "moi", texte: "Oui je viens de voir ! Je vais m'inscrire !" } ] },
+  { nom: "M. Koné", ville: "Ouaga • Mentor", lettre: "K", couleur: "#009739", dernier: "Pour réussir, révise chaque jour...", heure: "Hier", nonLus: 1, messages: [ { de: "lui", texte: "Bonjour Sosthène, bienvenue sur FaraLink !" }, { de: "lui", texte: "Pour réussir, révise chaque jour, même 1h." }, { de: "moi", texte: "Merci beaucoup Mentor !" } ] },
+  { nom: "Ibrahim Traoré", ville: "Bobo-Dioulasso", lettre: "I", couleur: "#009739", dernier: "On révise ensemble demain ?", heure: "Hier", nonLus: 0, messages: [ { de: "lui", texte: "On révise ensemble demain à Bobo ?" }, { de: "moi", texte: "Oui ! À 15h ?" } ] }
+];
+var conversationOuverte = -1;
+function sauvegarderMessages() { try { localStorage.setItem("fara_messages", JSON.stringify(conversations)); } catch(e) {} }
+function chargerMessages() { try { var s = localStorage.getItem("fara_messages"); if (s) conversations = JSON.parse(s); } catch(e) {} afficherConversations(); afficherNouvelleDiscussion(); }
+function afficherConversations() { var zone = document.getElementById("listeConversations"); zone.innerHTML = ""; var totalNonLus = 0; for (var i = 0; i < conversations.length; i++) { var c = conversations[i]; totalNonLus += c.nonLus; var badge = c.nonLus > 0 ? '<span style="background:#EF2B2D; color:white; padding:2px 8px; border-radius:10px; font-size:12px; font-weight:bold;">' + c.nonLus + '</span>' : ''; var div = document.createElement("div"); div.className = "card"; div.style.cursor = "pointer"; div.innerHTML = '<div class="carte-ami" style="border:none; padding:0;"><div class="avatar" style="background:' + c.couleur + '; width:50px; height:50px;">' + c.lettre + '</div><div style="flex:1;"><b>' + nettoyerTexte(c.nom) + '</b> ' + badge + '<br><small>' + c.ville + '</small><br><small style="color:#777;">' + nettoyerTexte(c.dernier) + '</small></div><small style="color:#777;">' + c.heure + '</small></div>'; div.onclick = (function(idx){ return function(){ ouvrirChat(idx); }; })(i); zone.appendChild(div); } document.getElementById("badgeMsgBas").innerHTML = totalNonLus; document.getElementById("badgeMsgBas").style.display = totalNonLus == 0 ? "none" : "block"; }
+function afficherNouvelleDiscussion() { var zone = document.getElementById("listeNouveauMsg"); zone.innerHTML = ""; var gens = [ { nom: "Mariam Ouédraogo", ville: "Koudougou", lettre: "M", couleur: "#FF8C00" }, { nom: "Yacouba Diallo", ville: "Kaya", lettre: "Y", couleur: "#6A0DAD" }, { nom: "Fatimata Koné", ville: "Banfora", lettre: "F", couleur: "#008080" }, { nom: "Mme Traoré", ville: "Bobo • Mentor", lettre: "T", couleur: "#009739" } ]; for (var i = 0; i < gens.length; i++) { var g = gens[i]; var div = document.createElement("div"); div.className = "carte-ami"; div.innerHTML = '<div class="avatar" style="background:' + g.couleur + '; width:42px; height:42px; font-size:16px;">' + g.lettre + '</div><div style="flex:1;"><b>' + g.nom + '</b><br><small>' + g.ville + '</small></div><button class="btn-ami" onclick="creerConversation(\'' + g.nom + '\', \'' + g.ville + '\', \'' + g.lettre + '\', \'' + g.couleur + '\')">💬 Parler</button>'; zone.appendChild(div); } }
+function creerConversation(nom, ville, lettre, couleur) { for (var i = 0; i < conversations.length; i++) { if (conversations[i].nom == nom) { ouvrirChat(i); return; } } conversations.unshift({ nom: nom, ville: ville, lettre: lettre, couleur: couleur, dernier: "Nouvelle discussion", heure: "Maintenant", nonLus: 0, messages: [ { de: "lui", texte: "Bonjour ! Merci d'avoir commencé la discussion sur FaraLink ! 🇧🇫" } ] }); sauvegarderMessages(); afficherConversations(); ouvrirChat(0); }
+function ouvrirChat(index) { conversationOuverte = index; var c = conversations[index]; c.nonLus = 0; sauvegarderMessages(); afficherConversations(); document.getElementById("zoneChat").style.display = "block"; document.getElementById("cardNouveauMsg").style.display = "none"; document.getElementById("avatarChat").innerHTML = c.lettre; document.getElementById("avatarChat").style.background = c.couleur; document.getElementById("nomChat").innerHTML = nettoyerTexte(c.nom); afficherMessagesChat(); document.getElementById("zoneChat").scrollIntoView({ behavior: "smooth" }); }
+function afficherMessagesChat() { var c = conversations[conversationOuverte]; var zone = document.getElementById("messagesChat"); zone.innerHTML = ""; for (var i = 0; i < c.messages.length; i++) { var m = c.messages[i]; var div = document.createElement("div"); div.className = m.de == "moi" ? "msg-moi" : "msg-lui"; div.innerHTML = nettoyerTexte(m.texte); zone.appendChild(div); } zone.scrollTop = zone.scrollHeight; }
+function envoyerMessage() { var input = document.getElementById("inputMsg"); var texte = input.value.trim(); if (texte == "" || conversationOuverte == -1) return; if (contientInsulte(texte)) { alert("🚫 Pas d'insultes !"); return; } var c = conversations[conversationOuverte]; c.messages.push({ de: "moi", texte: texte }); c.dernier = texte; c.heure = "Maintenant"; input.value = ""; sauvegarderMessages(); afficherMessagesChat(); afficherConversations(); setTimeout(function() { var reponses = ["D'accord, je comprends ! 👍", "Super ! Merci pour ton message !", "Oui, on se parle bientôt ! 🇧🇫", "C'est bien noté, merci Sosthène !"]; var r = reponses[Math.floor(Math.random() * reponses.length)]; c.messages.push({ de: "lui", texte: r }); c.dernier = r; sauvegarderMessages(); afficherMessagesChat(); afficherConversations(); }, 1200); }
+function fermerChat() { document.getElementById("zoneChat").style.display = "none"; document.getElementById("cardNouveauMsg").style.display = "block"; conversationOuverte = -1; }
+function chercherConversation() { var mot = document.getElementById("rechercheMsg").value.toLowerCase(); var zone = document.getElementById("listeConversations"); zone.innerHTML = ""; for (var i = 0; i < conversations.length; i++) { if (conversations[i].nom.toLowerCase().indexOf(mot) !== -1) { var c = conversations[i]; var div = document.createElement("div"); div.className = "card"; div.style.cursor = "pointer"; div.innerHTML = '<div class="carte-ami" style="border:none; padding:0;"><div class="avatar" style="background:' + c.couleur + '; width:50px; height:50px;">' + c.lettre + '</div><div style="flex:1;"><b>' + c.nom + '</b><br><small>' + c.ville + '</small><br><small>' + c.dernier + '</small></div></div>'; div.onclick = (function(idx){ return function(){ ouvrirChat(idx); }; })(i); zone.appendChild(div); } } }
+
+// ===== 1. AMIS =====
+var demandesAmis = [
+  { nom: "Karim Ouattara", ville: "Ouagadougou • Étudiant", lettre: "K", couleur: "#009739" },
+  { nom: "Aïcha Diallo", ville: "Tenkodogo • Étudiante", lettre: "A", couleur: "#EF2B2D" }
+];
+var mesAmis = [];
+function sauvegarderAmis() { try { localStorage.setItem("fara_amis", JSON.stringify(mesAmis)); localStorage.setItem("fara_demandes", JSON.stringify(demandesAmis)); } catch(e) {} }
+function chargerAmis() { try { var s = localStorage.getItem("fara_amis"); if (s) mesAmis = JSON.parse(s); var d = localStorage.getItem("fara_demandes"); if (d) demandesAmis = JSON.parse(d); } catch(e) {} afficherAmis(); afficherPopulaires(); rechercheAvancee(); try { totalPartages = parseInt(localStorage.getItem("fara_partages") || "0"); document.getElementById("nbPartagesProfil").innerHTML = totalPartages; } catch(e) {} }
+function afficherAmis() {
+  var zoneDem = document.getElementById("listeDemandes"); zoneDem.innerHTML = "";
+  if (demandesAmis.length == 0) { zoneDem.innerHTML = "<p style='color:#777;'>Aucune demande.</p>"; }
+  for (var j = 0; j < demandesAmis.length; j++) { var d = demandesAmis[j]; var div2 = document.createElement("div"); div2.className = "carte-ami"; div2.innerHTML = '<div class="avatar" style="background:' + d.couleur + '; width:46px; height:46px; font-size:18px;">' + d.lettre + '</div><div style="flex:1;"><b>' + d.nom + '</b><br><small>' + d.ville + '</small><br><small>Veut être ton ami</small></div><div style="display:flex; gap:5px;"><button class="btn-ami-accepter" onclick="accepterAmi(' + j + ')">Accepter</button><button class="btn-ami-refuser" onclick="refuserAmi(' + j + ')">Refuser</button></div>'; zoneDem.appendChild(div2); }
+  document.getElementById("badgeDemandes").innerHTML = demandesAmis.length;
+  document.getElementById("badgeAmisBas").innerHTML = demandesAmis.length;
+  document.getElementById("badgeAmisBas").style.display = demandesAmis.length == 0 ? "none" : "block";
+  var zoneMes = document.getElementById("listeMesAmis"); zoneMes.innerHTML = "";
+  if (mesAmis.length == 0) { zoneMes.innerHTML = "<p style='color:#777;'>Tu n'as pas encore d'amis.</p>"; }
+  for (var k = 0; k < mesAmis.length; k++) { var m = mesAmis[k]; var div3 = document.createElement("div"); div3.className = "carte-ami"; div3.innerHTML = '<div class="avatar" style="background:' + m.couleur + '; width:46px; height:46px; font-size:18px;">' + m.lettre + '</div><div style="flex:1;"><b>' + m.nom + '</b><br><small>' + m.ville + '</small><br><small style="color:#009739;">● En ligne</small></div><button class="btn-ami-supprimer" onclick="supprimerAmi(' + k + ')">Retirer</button>'; zoneMes.appendChild(div3); }
+  document.getElementById("nbAmisTitre").innerHTML = "(" + mesAmis.length + ")";
+  document.getElementById("nbAmisProfil").innerHTML = mesAmis.length;
+}
+function demanderAmi(bouton, nom) { bouton.innerHTML = "⏳ En attente..."; bouton.className = "btn-ami-attente"; bouton.disabled = true; alert("Demande envoyée à " + nom + " !"); }
+function accepterAmi(index) { var ami = demandesAmis[index]; mesAmis.push(ami); demandesAmis.splice(index, 1); sauvegarderAmis(); afficherAmis(); alert("🎉 Tu es maintenant ami avec " + ami.nom + " !"); }
+function refuserAmi(index) { var nom = demandesAmis[index].nom; demandesAmis.splice(index, 1); sauvegarderAmis(); afficherAmis(); alert("Demande de " + nom + " refusée."); }
+function supprimerAmi(index) { if (confirm("Tu veux retirer cet ami ?")) { var nom = mesAmis[index].nom; mesAmis.splice(index, 1); sauvegarderAmis(); afficherAmis(); alert(nom + " retiré."); } }
+function appliquerParametres() { if (localStorage.getItem("fara_sombre") == "oui") { document.body.classList.add("mode-sombre"); document.getElementById("switchSombre").classList.add("on"); } if (localStorage.getItem("fara_notif") == "non") { document.getElementById("switchNotif").classList.remove("on"); document.getElementById("iconeCloche").innerHTML = "🔕"; } if (localStorage.getItem("fara_public") == "non") { document.getElementById("switchPublic").classList.remove("on"); document.getElementById("statutProfilPublic").innerHTML = "🔒 Profil : Privé"; } var langue = localStorage.getItem("fara_langue"); if (langue) document.getElementById("choixLangue").value = langue; }
+function toggleSombre() { var sw = document.getElementById("switchSombre"); if (sw.classList.contains("on")) { sw.classList.remove("on"); document.body.classList.remove("mode-sombre"); localStorage.setItem("fara_sombre", "non"); } else { sw.classList.add("on"); document.body.classList.add("mode-sombre"); localStorage.setItem("fara_sombre", "oui"); alert("🌙 Mode sombre activé !"); } }
+function toggleNotif() { var sw = document.getElementById("switchNotif"); if (sw.classList.contains("on")) { sw.classList.remove("on"); localStorage.setItem("fara_notif", "non"); document.getElementById("iconeCloche").innerHTML = "🔕"; alert("🔕 Notifications désactivées"); } else { sw.classList.add("on"); localStorage.setItem("fara_notif", "oui"); document.getElementById("iconeCloche").innerHTML = "🔔"; alert("🔔 Notifications activées !"); } }
+function togglePublic() { var sw = document.getElementById("switchPublic"); if (sw.classList.contains("on")) { sw.classList.remove("on"); localStorage.setItem("fara_public", "non"); document.getElementById("statutProfilPublic").innerHTML = "🔒 Profil : Privé"; alert("🔒 Profil PRIVÉ"); } else { sw.classList.add("on"); localStorage.setItem("fara_public", "oui"); document.getElementById("statutProfilPublic").innerHTML = "👁️ Profil : Public - Tout le Burkina peut voir"; alert("👁️ Profil PUBLIC"); } }
+function changerLangue() { var l = document.getElementById("choixLangue").value; localStorage.setItem("fara_langue", l); if (l == "dioula") document.getElementById("msgLangue").innerHTML = "I ni ce ! Dioula choisi ! 🇧🇫"; else if (l == "moore") document.getElementById("msgLangue").innerHTML = "Yaa soma ! Mooré choisi ! 🇧🇫"; else document.getElementById("msgLangue").innerHTML = "Français choisi ! 🇫🇷"; }
+function remplirParametres() { document.getElementById("paramNom").value = localStorage.getItem("fara_nom") || ""; document.getElementById("paramVille").value = localStorage.getItem("fara_ville") || ""; document.getElementById("paramMetier").value = localStorage.getItem("fara_metier") || ""; }
+function sauvegarderProfil() { var n = document.getElementById("paramNom").value.trim(); var v = document.getElementById("paramVille").value.trim(); var m = document.getElementById("paramMetier").value.trim(); if (n == "" || v == "") { alert("Nom et ville obligatoires !"); return; } if (contientInsulte(n)) { alert("🚫 Nom poli !"); return; } localStorage.setItem("fara_nom", n); localStorage.setItem("fara_ville", v); localStorage.setItem("fara_metier", m); nomConnecte = n; connecterAvec(n, v, m); alert("✅ Infos sauvegardées ! " + n); }
+function changerPhotoDepuisParam() { document.getElementById("inputPhoto").click(); }
+function effacerPublications() { if (!confirm("Effacer TOUTES tes publications ?")) return; var mdp = prompt("Tape ton mot de passe pour confirmer :"); if (mdp !== localStorage.getItem("fara_mdp")) { alert("❌ Mauvais mot de passe !"); return; } mesPosts = []; sauvegarderPosts(); document.getElementById("mesPublications").innerHTML = ""; document.getElementById("nbPub").innerHTML = "0"; alert("🗑️ Publications effacées !"); }
+function reinitialiserTout() { if (!confirm("⚠️ TOUT effacer ?")) return; var mdp = prompt("Tape ton mot de passe :"); if (mdp !== localStorage.getItem("fara_mdp")) { alert("❌ Mauvais mot de passe !"); return; } localStorage.clear(); location.reload(); }
+var mentors = [
+  { nom: "M. Koné", metier: "Contrôleur du Travail • Ouaga", lettre: "K", specialite: "Concours ENAREF - Fonction Publique", couleur: "#EF2B2D" },
+  { nom: "Mme Traoré", metier: "GRH • Fonctionnaire - Bobo", lettre: "T", specialite: "Entretiens - CV - GRH", couleur: "#009739" },
+  { nom: "M. Ouédraogo", metier: "Comptable • Bobo-Dioulasso", lettre: "O", specialite: "Comptabilité - ENAREF", couleur: "#FF8C00" },
+  { nom: "Mme Sawadogo", metier: "Prof de Maths • Koudougou", lettre: "S", specialite: "Maths - Concours - Révision", couleur: "#6A0DAD" },
+  { nom: "M. Diallo", metier: "Informaticien • Ouaga", lettre: "D", specialite: "Programmation - Informatique", couleur: "#008080" }
+];
+var concours = [
+  { nom: "ENAREF - Cycle A", diplome: "BAC + 2 / Licence", statut: "Ouvert", couleurStatut: "badge-ouvert", emoji: "🏛️", desc: "École Nationale des Régies Financières. Pour devenir Inspecteur des Impôts, Douanes, Trésor.", details: "📌 Diplôme : BAC + 2 ou Licence<br>📌 Âge : 18 à 37 ans" },
+  { nom: "ENAM", diplome: "BAC / Licence / Master", statut: "Bientôt", couleurStatut: "badge-bientot", emoji: "⚖️", desc: "École Nationale d'Administration et de Magistrature.", details: "📌 Diplôme : BAC à Master selon le cycle" },
+  { nom: "Police Nationale", diplome: "BEPC / BAC", statut: "Ouvert", couleurStatut: "badge-ouvert", emoji: "👮🏾", desc: "Deviens Policier : Sous-Officier ou Officier de Police.", details: "📌 Diplôme : BEPC / BAC<br>📌 Âge : 18 à 25 ans" },
+  { nom: "Gendarmerie Nationale", diplome: "BEPC / BAC", statut: "Bientôt", couleurStatut: "badge-bientot", emoji: "🪖", desc: "Deviens Gendarme.", details: "📌 Diplôme : BEPC / BAC" },
+  { nom: "ENS - Professeurs", diplome: "BAC / Licence", statut: "Ouvert", couleurStatut: "badge-ouvert", emoji: "📚", desc: "École Normale Supérieure. Pour devenir Professeur.", details: "📌 Diplôme : BAC / Licence" },
+  { nom: "Douanes - Contrôleur", diplome: "BAC", statut: "Bientôt", couleurStatut: "badge-bientot", emoji: "🛃", desc: "Contrôleur des Douanes.", details: "📌 Diplôme : BAC" },
+  { nom: "IDS - Infirmier d'État", diplome: "BAC Scientifique", statut: "Ouvert", couleurStatut: "badge-ouvert", emoji: "🩺", desc: "Pour devenir Infirmier / Sage-femme.", details: "📌 Diplôme : BAC C / D" },
+  { nom: "ENAREF - Cycle B", diplome: "BAC", statut: "Ouvert", couleurStatut: "badge-ouvert", emoji: "💰", desc: "Contrôleur des Impôts, Douanes, Trésor.", details: "📌 Diplôme : BAC toutes séries" }
+];
+function afficherConcours(liste) { var zone = document.getElementById("listeConcours"); zone.innerHTML = ""; for (var i = 0; i < liste.length; i++) { var c = liste[i]; var div = document.createElement("div"); div.className = "card"; div.innerHTML = '<div style="display:flex; justify-content:space-between;"><h3 style="margin:0;">' + c.emoji + ' ' + c.nom + '</h3><span class="' + c.couleurStatut + '">' + c.statut + '</span></div><p><b>Diplôme : ' + c.diplome + '</b></p><p>' + c.desc + '</p><button class="btn-detail" onclick="voirDetailConcours(this)">👁️ Voir les détails</button><div class="concours-detail">' + c.details + '<br><button class="btn-interesse" onclick="suivreConcours(\'' + c.nom + '\')">⭐ Je suis intéressé</button></div><div class="actions" style="margin-top:10px;"><button onclick="partagerPost(this)">↗️ Partager ce concours (<span class="nb-partage">0</span>)</button></div>'; zone.appendChild(div); } }
+afficherConcours(concours);
+function chercherConcours() { var mot = document.getElementById("rechercheConcours").value.toLowerCase(); var filtres = []; for (var i = 0; i < concours.length; i++) { if (concours[i].nom.toLowerCase().indexOf(mot) !== -1 || concours[i].diplome.toLowerCase().indexOf(mot) !== -1) filtres.push(concours[i]); } afficherConcours(filtres); }
+function voirDetailConcours(bouton) { var carte = bouton.closest(".card"); var detail = carte.querySelector(".concours-detail"); if (detail.style.display == "block") { detail.style.display = "none"; bouton.innerHTML = "👁️ Voir les détails"; } else { detail.style.display = "block"; bouton.innerHTML = "🔽 Masquer les détails"; } }
+function suivreConcours(nomConcours) { var zone = document.getElementById("mesConcoursSuivis"); if (zone.innerHTML.indexOf("aucun concours") !== -1) zone.innerHTML = ""; var div = document.createElement("div"); div.className = "un-comment"; div.innerHTML = "⭐ <b>" + nettoyerTexte(nomConcours) + "</b> - Tu suis ce concours !"; zone.appendChild(div); ajouterNotifConcours("Tu suis : " + nomConcours, "Tu seras prévenu dès qu'il y a du nouveau !"); alert("Tu suis maintenant : " + nomConcours + " !"); }
+function afficherMentors(liste) { var zone = document.getElementById("listeMentors"); zone.innerHTML = ""; for (var i = 0; i < liste.length; i++) { var m = liste[i]; var div = document.createElement("div"); div.className = "card"; div.innerHTML = '<div class="profil"><div class="avatar" style="background:' + m.couleur + '">' + m.lettre + '</div><div><b>' + m.nom + '</b> <span class="badge">⭐ Mentor Vérifié</span><br><small>' + m.metier + '</small><br><small>Spécialité : ' + m.specialite + '</small></div></div><button class="btn-mentor" onclick="poserQuestion(\'' + m.nom + '\')">💬 Poser une question à ' + m.nom + '</button>'; zone.appendChild(div); } }
+afficherMentors(mentors);
+function chercherMentor() { var mot = document.getElementById("rechercheMentor").value.toLowerCase(); var filtres = []; for (var i = 0; i < mentors.length; i++) { if (mentors[i].nom.toLowerCase().indexOf(mot) !== -1 || mentors[i].specialite.toLowerCase().indexOf(mot) !== -1) filtres.push(mentors[i]); } afficherMentors(filtres); }
+function poserQuestion(nomMentor) { var q = prompt("Ta question pour " + nomMentor + " :"); if (q == null || q == "") return; if (contientInsulte(q)) { alert("🚫 Pas d'insultes !"); return; } var zone = document.getElementById("mesQuestions"); if (zone.innerHTML.indexOf("Aucune question") !== -1) zone.innerHTML = ""; var div = document.createElement("div"); div.className = "un-comment"; div.innerHTML = "<b>" + nettoyerTexte(nomConnecte) + " → " + nettoyerTexte(nomMentor) + " :</b> " + nettoyerTexte(q); zone.appendChild(div); alert("Question envoyée !"); }
+function allerPage(page, bouton) { var pages = document.querySelectorAll(".page"); for (var i = 0; i < pages.length; i++) pages[i].classList.remove("active"); document.getElementById("page-" + page).classList.add("active"); var boutons = document.querySelectorAll(".menu-bas button"); for (var i = 0; i < boutons.length; i++) boutons[i].classList.remove("actif"); if (bouton) bouton.classList.add("actif"); if (page == "parametres") remplirParametres(); window.scrollTo(0,0); }
+function mettrePhotoDansAvatars() { if (photoConnecte == "") return; document.getElementById("avatarMoi").innerHTML = '<img src="' + photoConnecte + '">'; document.getElementById("avatarProfil").innerHTML = '<img src="' + photoConnecte + '">'; }
+function changerPhoto(input) { var fichier = input.files[0]; if (!fichier) return; if (fichier.size > 2000000) { alert("Photo trop lourde !"); return; } var lecteur = new FileReader(); lecteur.onload = function(e) { photoConnecte = e.target.result; localStorage.setItem("fara_photo", photoConnecte); mettrePhotoDansAvatars(); afficherStories(); alert("Super ! Ta photo est changée ! 📸"); }; lecteur.readAsDataURL(fichier); }
+function preparerPhotoPost(input) { var fichier = input.files[0]; if (!fichier) return; var lecteur = new FileReader(); lecteur.onload = function(e) { photoPostTemp = e.target.result; var img = document.getElementById("apercuPhotoPost"); img.src = photoPostTemp; img.style.display = "block"; }; lecteur.readAsDataURL(fichier); }
+function connecterAvec(nom, ville, metier) { nomConnecte = nom; document.getElementById("nomAffiche").innerHTML = nettoyerTexte(nom); document.getElementById("villeAffiche").innerHTML = nettoyerTexte(ville) + " • " + nettoyerTexte(metier); document.getElementById("avatarMoi").innerHTML = nom.charAt(0).toUpperCase(); document.getElementById("nomProfil").innerHTML = nettoyerTexte(nom); document.getElementById("villeProfil").innerHTML = nettoyerTexte(ville) + " • " + nettoyerTexte(metier); document.getElementById("avatarProfil").innerHTML = nom.charAt(0).toUpperCase(); document.getElementById("ecran-connexion").style.display = "none"; document.getElementById("appli").style.display = "block"; mettrePhotoDansAvatars(); chargerPosts(); chargerAmis(); chargerMessages(); chargerStories(); chargerNotif(); appliquerParametres(); remplirParametres(); }
+function inscrire() { var nom = document.getElementById("nomUser").value.trim(); var ville = document.getElementById("villeUser").value.trim(); var metier = document.getElementById("metierUser").value.trim(); var mdp = document.getElementById("mdpUser").value; if (nom == "" || ville == "") { alert("Mets ton nom et ta ville d'abord !"); return; } if (mdp.length < 4) { alert("Mot de passe min 4 caractères !"); return; } if (contientInsulte(nom)) { alert("🚫 Nom poli !"); return; } localStorage.setItem("fara_nom", nom); localStorage.setItem("fara_ville", ville); localStorage.setItem("fara_metier", metier); localStorage.setItem("fara_mdp", mdp); localStorage.setItem("fara_session", "oui"); connecterAvec(nom, ville, metier); alert("Bienvenue sur FaraLink, " + nom + " ! 🇧🇫"); }
+function seConnecter() { var mdpTape = document.getElementById("mdpConnexion").value; var vraiMdp = localStorage.getItem("fara_mdp"); if (vraiMdp == null) { alert("Aucun compte trouvé !"); afficherInscription(); return; } if (mdpTape === vraiMdp) { tentatives = 0; localStorage.setItem("fara_session", "oui"); connecterAvec(localStorage.getItem("fara_nom"), localStorage.getItem("fara_ville"), localStorage.getItem("fara_metier")); alert("Bon retour, " + localStorage.getItem("fara_nom") + " ! 🔒"); } else { tentatives++; document.getElementById("msgErreurMdp").style.display = "block"; if (tentatives >= 3) { alert("🚨 3 essais ratés !"); tentatives = 0; } else { alert("❌ Mauvais mot de passe ! Il te reste " + (3 - tentatives) + " essais."); } } }
+function seDeconnecter() { if (confirm("Tu veux verrouiller ton compte ?")) { localStorage.setItem("fara_session", "non"); location.reload(); } }
+var nomSauve = localStorage.getItem("fara_nom");
+var session = localStorage.getItem("fara_session");
+if (nomSauve != null && session == "oui") { photoConnecte = localStorage.getItem("fara_photo") || ""; connecterAvec(nomSauve, localStorage.getItem("fara_ville"), localStorage.getItem("fara_metier")); }
+else if (nomSauve != null) { afficherConnexion(); }
+function sauvegarderPosts() { try { localStorage.setItem("fara_posts", JSON.stringify(mesPosts)); } catch(e) {} }
+function creerCartePost(post) { var photoHtml = photoConnecte != "" ? '<img src="' + photoConnecte + '">' : nomConnecte.charAt(0).toUpperCase(); var imagePostHtml = post.image != "" ? '<img class="img-post" src="' + post.image + '">' : ""; var div = document.createElement("div"); div.className = "card"; div.innerHTML = '<div class="profil"><div class="avatar">' + photoHtml + '</div><div><b>' + nettoyerTexte(nomConnecte) + '</b><br><small>' + nettoyerTexte(post.date) + '</small></div></div><p class="texte-post">' + nettoyerTexte(post.texte) + '</p>' + imagePostHtml + '<div class="btn-petits"><button class="btn-modifier" onclick="modifierPost(this)">✏️ Modifier</button><button class="btn-supprimer" onclick="supprimerPost(this)">🗑️ Supprimer</button></div><div class="actions"><button onclick="aimer(this, 0)">❤️ J\'aime (0)</button><button onclick="voirCommentaires(this)">💬 Commenter (0)</button><button onclick="partagerPost(this)">↗️ Partager (<span class="nb-partage">0</span>)</button></div><div class="zone-comment"><div class="liste-comments"></div><input class="input-comment" type="text" placeholder="Écris ton commentaire..." maxlength="200"><button class="btn-comment" onclick="ajouterCommentaire(this)">Envoyer 💬</button></div>'; return div; }
+function chargerPosts() { var sauve = localStorage.getItem("fara_posts"); if (sauve == null) return; try { mesPosts = JSON.parse(sauve); } catch(e) { mesPosts = []; return; } var zone = document.getElementById("mesPublications"); zone.innerHTML = ""; for (var i = 0; i < mesPosts.length; i++) { zone.appendChild(creerCartePost(mesPosts[i])); } document.getElementById("nbPub").innerHTML = mesPosts.length; }
+function supprimerPost(bouton) { if (confirm("Supprimer cette publication ?")) { var carte = bouton.closest(".card"); var index = Array.prototype.indexOf.call(carte.parentNode.children, carte); mesPosts.splice(index, 1); sauvegarderPosts(); carte.remove(); document.getElementById("nbPub").innerHTML = mesPosts.length; alert("Publication supprimée !"); } }
+function modifierPost(bouton) { var carte = bouton.closest(".card"); var texteElement = carte.querySelector(".texte-post"); var ancienTexte = texteElement.textContent.replace(" (modifié)", ""); var nouveauTexte = prompt("Corrige ta publication :", ancienTexte); if (nouveauTexte == null || nouveauTexte == "") return; if (contientInsulte(nouveauTexte)) { alert("🚫 Pas d'insultes !"); return; } var index = Array.prototype.indexOf.call(carte.parentNode.children, carte); mesPosts[index].texte = nouveauTexte; sauvegarderPosts(); texteElement.innerHTML = nettoyerTexte(nouveauTexte) + " <small style='color:#009739;'>(modifié)</small>"; alert("Modifiée et sauvegardée !"); }
+function publier() { var texte = document.getElementById("monTexte").value; if (texte == "" && photoPostTemp == "") { alert("Écris quelque chose ou choisis une photo !"); return; } if (contientInsulte(texte)) { alert("🚫 Pas d'insultes !"); return; } var nouveauPost = { texte: texte, image: photoPostTemp, date: "À l'instant • Burkina Faso" }; mesPosts.unshift(nouveauPost); sauvegarderPosts(); var zone = document.getElementById("mesPublications"); zone.prepend(creerCartePost(nouveauPost)); document.getElementById("monTexte").value = ""; photoPostTemp = ""; document.getElementById("apercuPhotoPost").style.display = "none"; document.getElementById("apercuPhotoPost").src = ""; document.getElementById("nbPub").innerHTML = mesPosts.length; alert("Publié pour tout le Burkina ! 💾🇧🇫"); }
+function aimer(bouton, debut) { var deja = bouton.getAttribute("data-like"); if (deja == "oui") { alert("Tu as déjà aimé !"); return; } bouton.setAttribute("data-like", "oui"); bouton.classList.add("liked"); var nouveau = debut + 1; bouton.innerHTML = "❤️ J'aime (" + nouveau + ") ❤️"; bouton.setAttribute("onclick", "aimer(this, " + nouveau + ")"); }
+function voirCommentaires(bouton) { var carte = bouton.closest(".card"); var zone = carte.querySelector(".zone-comment"); zone.style.display = (zone.style.display == "block") ? "none" : "block"; }
+function ajouterCommentaire(bouton) { var carte = bouton.closest(".card"); var input = carte.querySelector(".input-comment"); var texte = input.value; if (texte == "") { alert("Écris ton commentaire d'abord !"); return; } if (contientInsulte(texte)) { alert("🚫 Pas d'insultes !"); return; } var liste = carte.querySelector(".liste-comments"); var div = document.createElement("div"); div.className = "un-comment"; div.innerHTML = "<b>" + nettoyerTexte(nomConnecte) + " :</b> " + nettoyerTexte(texte); liste.appendChild(div); input.value = ""; }
+function showPage(id){
+  var pages = document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++){ pages[i].classList.remove('active'); pages[i].style.display='none'; }
+  var cible = document.getElementById(id);
+  if(cible){ cible.style.display='block'; cible.classList.add('active'); }
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
